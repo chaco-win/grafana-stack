@@ -1,0 +1,39 @@
+groups:
+  - name: zfs
+    rules:
+
+      - alert: ZFSPoolDegraded
+        expr: node_zfs_zpool_state{state!="online"} == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ZFS pool {{ $labels.pool }} is DEGRADED"
+          description: "Pool {{ $labels.pool }} on {{ $labels.instance }} is in state {{ $labels.state }}. A drive may have failed. Replace immediately."
+
+      - alert: ZFSPoolErrors
+        expr: node_zfs_zpool_read_errors + node_zfs_zpool_write_errors + node_zfs_zpool_checksum_errors > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ZFS pool {{ $labels.pool }} has disk errors"
+          description: "Pool {{ $labels.pool }} is reporting errors. Run: zpool status"
+
+      - alert: ZFSPoolHighUsage
+        expr: (node_zfs_zpool_allocated_bytes / node_zfs_zpool_size_bytes) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ZFS pool {{ $labels.pool }} is over 80% full"
+          description: "Pool {{ $labels.pool }} is {{ $value | printf \"%.1f\" }}% full. ZFS degrades above 80%."
+
+      - alert: ZFSSnapshotMissing
+        expr: (time() - node_zfs_zpool_last_snapshot_timestamp) > 777600
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "ZFS pool {{ $labels.pool }} has no recent snapshot"
+          description: "No snapshot in over 9 days on {{ $labels.pool }}. Check cron jobs."

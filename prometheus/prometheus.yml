@@ -1,0 +1,59 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Load alert rules
+rule_files:
+  - /etc/prometheus/alerting/*.yml
+
+# Alertmanager (if you add it later)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['alertmanager:9093']
+
+scrape_configs:
+
+  # ─── Prometheus itself ───────────────────────────────────────────────────────
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # ─── Ubuntu home server host metrics ────────────────────────────────────────
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          host: "ubuntu-home-server"
+
+  # ─── Docker container metrics ───────────────────────────────────────────────
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+        labels:
+          host: "ubuntu-home-server"
+
+  # ─── ZFS pool health (ubuntu server) ────────────────────────────────────────
+  - job_name: "zfs-exporter"
+    static_configs:
+      - targets: ["zfs-exporter:9134"]
+        labels:
+          host: "ubuntu-home-server"
+
+  # ─── Pushgateway (cron jobs / backup scripts push here) ─────────────────────
+  - job_name: "pushgateway"
+    honor_labels: true
+    static_configs:
+      - targets: ["pushgateway:9091"]
+
+  # ─── OPNsense router ─────────────────────────────────────────────────────────
+  # Requires: System → Firmware → Plugins → os-telegraf installed on OPNsense
+  # Then enable Prometheus output on port 9273 in Services → Telegraf
+  - job_name: "opnsense"
+    static_configs:
+      - targets: ["10.0.0.1:9273"]
+        labels:
+          host: "opnsense-router"
+    # OPNsense self-signed cert — skip verify if using HTTPS
+    # tls_config:
+    #   insecure_skip_verify: true

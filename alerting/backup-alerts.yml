@@ -1,0 +1,21 @@
+groups:
+  - name: backups
+    rules:
+
+      - alert: BackupJobMissing
+        expr: time() - push_time_seconds{job="zfs-backup"} > 90000
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Backup job has not run recently"
+          description: "ZFS backup last reported {{ $value | humanizeDuration }} ago. Check cron."
+
+      - alert: BackupJobFailed
+        expr: backup_last_status{job="zfs-backup"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ZFS backup job FAILED"
+          description: "Last backup on {{ $labels.instance }} failed. Check /var/log/backups/"

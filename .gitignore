@@ -1,0 +1,16 @@
+# Never commit secrets
+.env
+
+# Persistent data volumes (stay on server)
+data/
+grafana_data/
+prometheus_data/
+loki_data/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

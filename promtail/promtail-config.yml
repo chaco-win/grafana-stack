@@ -1,0 +1,57 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+
+  # ─── All Docker container logs (auto-discovers every container) ──────────────
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: [__meta_docker_container_name]
+        regex: "/(.*)"
+        target_label: container
+      - source_labels: [__meta_docker_container_image]
+        target_label: image
+      - source_labels: [__meta_docker_compose_service]
+        target_label: service
+    pipeline_stages:
+      - docker: {}
+
+  # ─── ZFS backup logs ─────────────────────────────────────────────────────────
+  - job_name: zfs-backups
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: zfs-backups
+          host: ubuntu-home-server
+          __path__: /var/log/backups/*.log
+
+  # ─── System syslog ───────────────────────────────────────────────────────────
+  - job_name: syslog
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: syslog
+          host: ubuntu-home-server
+          __path__: /var/log/syslog
+
+  # ─── Cron logs ───────────────────────────────────────────────────────────────
+  - job_name: cron
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: cron
+          host: ubuntu-home-server
+          __path__: /var/log/cron.log
