@@ -73,6 +73,7 @@ services:
       - ./promtail/promtail-config.yml:/etc/promtail/config.yml
       - /var/log:/var/log:ro
       - /var/log/backups:/var/log/backups:ro
+      - /home/admin/stacks/fab-events-sync/logs:/var/log/fab-events:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /run/docker.sock:/run/docker.sock
     command: -config.file=/etc/promtail/config.yml

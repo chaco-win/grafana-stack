@@ -55,3 +55,19 @@ scrape_configs:
           job: cron
           host: ubuntu-home-server
           __path__: /var/log/cron.log
+
+  # ─── Fab Events Scraper logs ─────────────────────────────────────────────────
+  - job_name: fab-events
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: fab-events
+          host: ubuntu-home-server
+          __path__: /var/log/fab-events/*.log
+    pipeline_stages:
+      - regex:
+          source: filename
+          expression: "/var/log/fab-events/(?P<script>[a-z_]+)_\\d+_\\d+\\.log"
+      - labels:
+          script:
