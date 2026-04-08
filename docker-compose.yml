@@ -98,6 +98,7 @@ services:
       - "--path.procfs=/host/proc"
       - "--path.rootfs=/rootfs"
       - "--path.sysfs=/host/sys"
+      - "--collector.zfs"
       - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
     networks:
       - monitoring
@@ -118,17 +119,6 @@ services:
     privileged: true
     devices:
       - /dev/kmsg
-    networks:
-      - monitoring
-
-  # ─── ZFS Exporter (pool health, snapshots, capacity) ────────────────────────
-  zfs-exporter:
-    image: pdf/zfs-exporter:latest
-    container_name: zfs-exporter
-    restart: unless-stopped
-    ports:
-      - "9134:9134"
-    privileged: true
     networks:
       - monitoring
 

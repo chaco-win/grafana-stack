@@ -33,13 +33,6 @@ scrape_configs:
         labels:
           host: "ubuntu-home-server"
 
-  # ─── ZFS pool health (ubuntu server) ────────────────────────────────────────
-  - job_name: "zfs-exporter"
-    static_configs:
-      - targets: ["zfs-exporter:9134"]
-        labels:
-          host: "ubuntu-home-server"
-
   # ─── Pushgateway (cron jobs / backup scripts push here) ─────────────────────
   - job_name: "pushgateway"
     honor_labels: true
