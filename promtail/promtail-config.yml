@@ -64,10 +64,10 @@ scrape_configs:
         labels:
           job: fab-events
           host: ubuntu-home-server
-          __path__: /var/log/fab-events/*.log
+          __path__: /fab-events-logs/*.log
     pipeline_stages:
       - regex:
           source: filename
-          expression: "/var/log/fab-events/(?P<script>[a-z_]+)_\\d+_\\d+\\.log"
+          expression: "/fab-events-logs/(?P<script>[a-z_]+)_\\d+_\\d+\\.log"
       - labels:
           script:
