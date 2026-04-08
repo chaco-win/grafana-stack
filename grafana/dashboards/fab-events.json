@@ -1,0 +1,174 @@
+{
+  "title": "Fab Events Scraper",
+  "uid": "fab-events",
+  "tags": ["fab-events", "logs"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "refresh": "1m",
+  "time": { "from": "now-24h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "script",
+        "label": "Script",
+        "type": "query",
+        "datasource": { "type": "loki", "uid": "loki" },
+        "query": "label_values({job=\"fab-events\"}, script)",
+        "includeAll": true,
+        "allValue": ".+",
+        "multi": true,
+        "current": { "text": "All", "value": "$__all" },
+        "refresh": 2,
+        "sort": 1
+      },
+      {
+        "name": "level",
+        "label": "Level",
+        "type": "custom",
+        "query": "All,INFO,WARNING,ERROR",
+        "includeAll": false,
+        "current": { "text": "All", "value": "All" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Log Volume by Level",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 7 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum by (level) (count_over_time({job=\"fab-events\", script=~\"$script\"} | logfmt | level=~\"INFO\" [$__interval]))",
+          "legendFormat": "INFO",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (level) (count_over_time({job=\"fab-events\", script=~\"$script\"} | logfmt | level=~\"WARNING\" [$__interval]))",
+          "legendFormat": "WARNING",
+          "refId": "B"
+        },
+        {
+          "expr": "sum by (level) (count_over_time({job=\"fab-events\", script=~\"$script\"} | logfmt | level=~\"ERROR\" [$__interval]))",
+          "legendFormat": "ERROR",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "ERROR" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "WARNING" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } }] },
+          { "matcher": { "id": "byName", "options": "INFO" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "title": "Errors (24h)",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 7, "w": 4, "h": 4 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"fab-events\", script=~\"$script\"} |= \"ERROR\" [24h]))",
+          "legendFormat": "",
+          "refId": "A",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 1 }] }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 3,
+      "title": "Warnings (24h)",
+      "type": "stat",
+      "gridPos": { "x": 4, "y": 7, "w": 4, "h": 4 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"fab-events\", script=~\"$script\"} |= \"WARNING\" [24h]))",
+          "legendFormat": "",
+          "refId": "A",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "steps": [{ "color": "green", "value": 0 }, { "color": "yellow", "value": 1 }] }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 4,
+      "title": "Total Log Lines (24h)",
+      "type": "stat",
+      "gridPos": { "x": 8, "y": 7, "w": 4, "h": 4 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"fab-events\", script=~\"$script\"} [24h]))",
+          "legendFormat": "",
+          "refId": "A",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "blue" }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+    {
+      "id": 5,
+      "title": "Last Run per Script",
+      "type": "table",
+      "gridPos": { "x": 12, "y": 7, "w": 12, "h": 4 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum by (script) (count_over_time({job=\"fab-events\"} [24h]))",
+          "legendFormat": "{{script}}",
+          "refId": "A",
+          "instant": true
+        }
+      ],
+      "options": { "footer": { "show": false } }
+    },
+    {
+      "id": 6,
+      "title": "Logs",
+      "type": "logs",
+      "gridPos": { "x": 0, "y": 11, "w": 24, "h": 16 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{job=\"fab-events\", script=~\"$script\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      }
+    }
+  ]
+}
