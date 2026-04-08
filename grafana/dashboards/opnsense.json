@@ -13,7 +13,7 @@
         "label": "Interface",
         "type": "query",
         "datasource": { "type": "prometheus", "uid": "prometheus" },
-        "query": "label_values(net_bytes_recv{host=\"opnsense\"}, interface)",
+        "query": "label_values(net_bytes_recv{host=\"opnsense-router\"}, interface)",
         "includeAll": true,
         "allValue": ".+",
         "multi": true,
@@ -32,7 +32,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "100 - cpu_usage_idle{host=\"opnsense\", cpu=\"cpu-total\"}",
+          "expr": "100 - cpu_usage_idle{host=\"opnsense-router\", cpu=\"cpu-total\"}",
           "legendFormat": "CPU %",
           "refId": "A"
         }
@@ -55,7 +55,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "mem_used_percent{host=\"opnsense\"}",
+          "expr": "mem_used_percent{host=\"opnsense-router\"}",
           "legendFormat": "Memory %",
           "refId": "A"
         }
@@ -78,7 +78,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "system_uptime{host=\"opnsense\"}",
+          "expr": "system_uptime{host=\"opnsense-router\"}",
           "legendFormat": "",
           "refId": "A",
           "instant": true
@@ -100,7 +100,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "processes_running{host=\"opnsense\"}",
+          "expr": "processes_running{host=\"opnsense-router\"}",
           "legendFormat": "",
           "refId": "A",
           "instant": true
@@ -121,7 +121,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "count(cpu_usage_idle{host=\"opnsense\", cpu!=\"cpu-total\"})",
+          "expr": "count(cpu_usage_idle{host=\"opnsense-router\", cpu!=\"cpu-total\"})",
           "legendFormat": "",
           "refId": "A",
           "instant": true
@@ -142,7 +142,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "mem_total{host=\"opnsense\"}",
+          "expr": "mem_total{host=\"opnsense-router\"}",
           "legendFormat": "",
           "refId": "A",
           "instant": true
@@ -164,7 +164,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "rate(net_bytes_recv{host=\"opnsense\", interface=~\"$interface\"}[5m]) * 8",
+          "expr": "rate(net_bytes_recv{host=\"opnsense-router\", interface=~\"$interface\"}[5m]) * 8",
           "legendFormat": "{{interface}} in",
           "refId": "A"
         }
@@ -184,7 +184,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "rate(net_bytes_sent{host=\"opnsense\", interface=~\"$interface\"}[5m]) * 8",
+          "expr": "rate(net_bytes_sent{host=\"opnsense-router\", interface=~\"$interface\"}[5m]) * 8",
           "legendFormat": "{{interface}} out",
           "refId": "A"
         }
@@ -204,7 +204,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "rate(net_packets_recv{host=\"opnsense\", interface=~\"$interface\"}[5m])",
+          "expr": "rate(net_packets_recv{host=\"opnsense-router\", interface=~\"$interface\"}[5m])",
           "legendFormat": "{{interface}} packets/s",
           "refId": "A"
         }
@@ -224,17 +224,17 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "rate(net_err_in{host=\"opnsense\", interface=~\"$interface\"}[5m])",
+          "expr": "rate(net_err_in{host=\"opnsense-router\", interface=~\"$interface\"}[5m])",
           "legendFormat": "{{interface}} err in",
           "refId": "A"
         },
         {
-          "expr": "rate(net_err_out{host=\"opnsense\", interface=~\"$interface\"}[5m])",
+          "expr": "rate(net_err_out{host=\"opnsense-router\", interface=~\"$interface\"}[5m])",
           "legendFormat": "{{interface}} err out",
           "refId": "B"
         },
         {
-          "expr": "rate(net_drop_in{host=\"opnsense\", interface=~\"$interface\"}[5m])",
+          "expr": "rate(net_drop_in{host=\"opnsense-router\", interface=~\"$interface\"}[5m])",
           "legendFormat": "{{interface}} drop in",
           "refId": "C"
         }
@@ -254,7 +254,7 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "disk_used_percent{host=\"opnsense\"}",
+          "expr": "disk_used_percent{host=\"opnsense-router\"}",
           "legendFormat": "{{path}}",
           "refId": "A"
         }
@@ -276,12 +276,12 @@
       "datasource": { "type": "prometheus", "uid": "prometheus" },
       "targets": [
         {
-          "expr": "rate(diskio_read_bytes{host=\"opnsense\"}[5m])",
+          "expr": "rate(diskio_read_bytes{host=\"opnsense-router\"}[5m])",
           "legendFormat": "{{name}} read",
           "refId": "A"
         },
         {
-          "expr": "rate(diskio_write_bytes{host=\"opnsense\"}[5m])",
+          "expr": "rate(diskio_write_bytes{host=\"opnsense-router\"}[5m])",
           "legendFormat": "{{name}} write",
           "refId": "B"
         }
