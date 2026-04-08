@@ -2,7 +2,7 @@
   "title": "Fab Events Scraper",
   "uid": "fab-events",
   "tags": ["fab-events", "logs"],
-  "timezone": "browser",
+  "timezone": "America/Chicago",
   "schemaVersion": 38,
   "refresh": "1m",
   "time": { "from": "now-24h", "to": "now" },
@@ -40,17 +40,17 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "sum by (level) (count_over_time({job=\"fab-events\", script=~\"$script\"} | logfmt | level=~\"INFO\" [$__interval]))",
+          "expr": "sum(count_over_time({job=\"fab-events\", script=~\"$script\"} |= \"- INFO -\" [$__interval]))",
           "legendFormat": "INFO",
           "refId": "A"
         },
         {
-          "expr": "sum by (level) (count_over_time({job=\"fab-events\", script=~\"$script\"} | logfmt | level=~\"WARNING\" [$__interval]))",
+          "expr": "sum(count_over_time({job=\"fab-events\", script=~\"$script\"} |= \"- WARNING -\" [$__interval]))",
           "legendFormat": "WARNING",
           "refId": "B"
         },
         {
-          "expr": "sum by (level) (count_over_time({job=\"fab-events\", script=~\"$script\"} | logfmt | level=~\"ERROR\" [$__interval]))",
+          "expr": "sum(count_over_time({job=\"fab-events\", script=~\"$script\"} |= \"- ERROR -\" [$__interval]))",
           "legendFormat": "ERROR",
           "refId": "C"
         }
