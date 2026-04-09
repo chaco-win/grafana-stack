@@ -1,0 +1,92 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: fab-events
+    folder: Fab Events
+    interval: 5m
+    rules:
+
+      - uid: fab-events-error
+        title: Fab Events Scraper Error
+        condition: B
+        data:
+          - refId: A
+            datasourceUid: loki
+            relativeTimeRange:
+              from: 900
+              to: 0
+            model:
+              expr: 'sum(count_over_time({job="fab-events"} |= "- ERROR -" [15m]))'
+              queryType: range
+              refId: A
+          - refId: B
+            datasourceUid: "__expr__"
+            model:
+              type: math
+              expression: "$A > 0"
+              refId: B
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: "Fab Events scraper has errors"
+          description: "One or more scrapers logged an ERROR. Check the Fab Events dashboard for details."
+        labels:
+          severity: critical
+
+      - uid: fab-events-no-events
+        title: Fab Events No Events Found
+        condition: B
+        data:
+          - refId: A
+            datasourceUid: loki
+            relativeTimeRange:
+              from: 900
+              to: 0
+            model:
+              expr: 'sum(count_over_time({job="fab-events"} |= "No events found" [15m]))'
+              queryType: range
+              refId: A
+          - refId: B
+            datasourceUid: "__expr__"
+            model:
+              type: math
+              expression: "$A > 0"
+              refId: B
+        noDataState: OK
+        execErrState: Alerting
+        for: 0s
+        annotations:
+          summary: "Fab Events scraper found no events"
+          description: "A scraper ran but returned no events. The FAB API may be down or returning empty results."
+        labels:
+          severity: warning
+
+      - uid: fab-events-silent
+        title: Fab Events Scraper Silent
+        condition: B
+        data:
+          - refId: A
+            datasourceUid: loki
+            relativeTimeRange:
+              from: 432000
+              to: 0
+            model:
+              expr: 'sum(count_over_time({job="fab-events"} [5d]))'
+              queryType: range
+              refId: A
+          - refId: B
+            datasourceUid: "__expr__"
+            model:
+              type: math
+              expression: "$A < 1"
+              refId: B
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1h
+        annotations:
+          summary: "Fab Events scraper has not run in 5 days"
+          description: "No logs from the fab-events job in the last 5 days. The scraper may have stopped."
+        labels:
+          severity: warning
